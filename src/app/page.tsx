@@ -1,9 +1,9 @@
+import Navbar from '@/components/navbar';
+
 export default function Home() {
   return (
     <main>
-      <div>
-        <h1>FeedForms</h1>
-      </div>
+      <Navbar />
     </main>
   );
-}
+};

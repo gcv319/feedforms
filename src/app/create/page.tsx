@@ -1,9 +1,11 @@
+import Navbar from "@/components/navbar";
+import RecipeForm from "@/components/recipeform";
+
 export default function Create() {
   return (
     <main>
-      <div>
-        <h1>Form</h1>
-      </div>
+      <Navbar />
+      <RecipeForm />
     </main>
   )
 }
