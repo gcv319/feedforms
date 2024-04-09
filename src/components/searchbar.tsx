@@ -1,7 +1,22 @@
-import React from 'react'
+import React from 'react';
 
-export default function Searchbar() {
+interface SearchBarProps {
+  onSearchChange: (searchTerm: string) => void;
+}
+
+export default function SearchBar({ onSearchChange }: SearchBarProps) {
+  function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
+    onSearchChange(e.target.value);
+  }
+
   return (
-    <div>searchbar</div>
-  )
+    <div className="input-group mb-3">
+      <input
+        type="text"
+        className="form-control"
+        placeholder="Search recipes"
+        onChange={handleChange}
+      />
+    </div>
+  );
 }

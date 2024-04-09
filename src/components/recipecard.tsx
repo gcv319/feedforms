@@ -1,14 +1,18 @@
+'use client'
 import React, { useState, useEffect } from 'react';
 import { ref, getDownloadURL } from 'firebase/storage';
 import { storage, db, auth } from '@/utils/firebase';
 import { collection, addDoc, query, where, getDocs, doc, deleteDoc } from 'firebase/firestore';
 import Image from 'next/image';
+import Alert from './alert';
+import { useRouter } from 'next/navigation';
 
 interface Recipe {
   id: string;
   name: string;
   image: string;
   countryOfOrigin: string;
+  ingredients: string[];
   author: {
     displayName: string;
     email: string;
@@ -19,14 +23,16 @@ interface Recipe {
 interface RecipeCardProps {
   recipe: Recipe;
   variant: 'addToFavorites' | 'deleteRecipe' | 'removeFromFavorites'; // Define the possible variants
+  fetchFavoriteRecipes?: () => void;
+  fetchRecipes?: () => void;
 }
 
-export default function RecipeCard({ recipe, variant }: RecipeCardProps) {
+export default function RecipeCard({ recipe, variant, fetchFavoriteRecipes, fetchRecipes }: RecipeCardProps) {
   const { name, image, countryOfOrigin, author } = recipe;
   const [imageUrl, setImageUrl] = useState<string>('');
-  const [alertVisible, setAlertVisible] = useState<boolean>(false); // State to control the visibility of the alert
-  const [alertMessage, setAlertMessage] = useState<string>(''); // State to store the alert message
-  const [alertType, setAlertType] = useState<string>(''); // State to store the alert type
+  const [alert, setAlert] = useState({ message: '', type: '', visible: false });
+
+  const router = useRouter();
 
   useEffect(() => {
     const getImageUrl = async () => {
@@ -58,6 +64,12 @@ export default function RecipeCard({ recipe, variant }: RecipeCardProps) {
     variant === 'deleteRecipe' ? 'Delete Recipe' :
       'Remove';
 
+  // Update this function to use the Alert component
+  const showCustomAlert = (message: string, type: 'success' | 'danger' | 'warning' | 'info') => {
+    setAlert({ message, type, visible: true });
+    setTimeout(() => setAlert({ message: '', type: '', visible: false }), 3000);
+  };
+
   const addToFavorites = async () => {
     try {
       const currentUser = auth.currentUser;
@@ -77,21 +89,12 @@ export default function RecipeCard({ recipe, variant }: RecipeCardProps) {
           countryOfOrigin,
           author,
         });
-        setAlertMessage('Added to favorites');
-        setAlertType('success');
-        setAlertVisible(true);
+        showCustomAlert('Added to favorites', 'success');
       } else {
-        setAlertMessage('Already in favorites');
-        setAlertType('info');
-        setAlertVisible(true);
+        showCustomAlert('Already in favorites', 'info');
       }
-
-      // Hide the alert after 3 seconds (3000 milliseconds)
-      setTimeout(() => {
-        setAlertVisible(false);
-      }, 3000);
     } catch (error) {
-      console.error('Error adding to favorites:', error);
+      showCustomAlert('Error adding to favorites', 'danger');
     }
   };
 
@@ -103,15 +106,12 @@ export default function RecipeCard({ recipe, variant }: RecipeCardProps) {
     }
     try {
       await deleteDoc(doc(db, 'recipes', recipe.id));
-      setAlertMessage('Recipe deleted successfully');
-      setAlertType('success');
-      setAlertVisible(true);
-      // Invoke some parent callback to refresh the list if necessary
+      showCustomAlert('Recipe deleted successfully', 'success');
+      if (fetchRecipes) {
+        setTimeout(() => fetchRecipes(), 2000);
+      }
     } catch (error) {
-      console.error('Error deleting recipe:', error);
-      setAlertMessage('Failed to delete recipe');
-      setAlertType('danger');
-      setAlertVisible(true);
+      showCustomAlert('Failed to delete recipe', 'danger');
     }
   };
 
@@ -124,15 +124,12 @@ export default function RecipeCard({ recipe, variant }: RecipeCardProps) {
       }
       const favoriteRef = doc(db, `users/${currentUser.uid}/favorites`, recipe.id);
       await deleteDoc(favoriteRef);
-      setAlertMessage('Removed from favorites');
-      setAlertType('success');
-      setAlertVisible(true);
-      // Optionally, invoke some parent callback to refresh the list
+      showCustomAlert('Removed from favorites', 'success');
+      if (fetchFavoriteRecipes) {
+        setTimeout(() => fetchFavoriteRecipes(), 2000);
+      }
     } catch (error) {
-      console.error('Error removing from favorites:', error);
-      setAlertMessage('Failed to remove from favorites');
-      setAlertType('danger');
-      setAlertVisible(true);
+      showCustomAlert('Failed to remove from favorites', 'danger');
     }
   };
 
@@ -147,10 +144,13 @@ export default function RecipeCard({ recipe, variant }: RecipeCardProps) {
           {buttonText}
         </button>
       </div>
-      {alertVisible && (
-        <div className={`alert alert-${alertType} position-fixed bottom-0 start-0 m-3`} role="alert">
-          {alertMessage}
-        </div>
+      {alert.visible && (
+        <Alert
+          message={alert.message}
+          type={alert.type}
+          visible={alert.visible}
+          onClose={() => setAlert({ ...alert, visible: false })}
+        />
       )}
     </div>
   );
