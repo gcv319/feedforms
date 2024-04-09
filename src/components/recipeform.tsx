@@ -2,9 +2,9 @@
 import React, { useState, useEffect } from 'react';
 import { collection, addDoc } from 'firebase/firestore';
 import { db, storage } from '@/utils/firebase';
-import { getAuth, onAuthStateChanged, User } from 'firebase/auth';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { useRouter } from 'next/navigation';
+import { useAuth } from '@/contexts/authContext';
 
 import ingredientsData from '@/utils/ingredients.json';
 import countriesData from '@/utils/countries.json';
@@ -12,20 +12,11 @@ import countriesData from '@/utils/countries.json';
 export default function RecipeForm() {
   const [name, setName] = useState<string>('');
   const [ingredients, setIngredients] = useState<string[]>([]);
-  const [image, setImage] = useState<File | null>(null); 
+  const [image, setImage] = useState<File | null>(null);
   const [countryOfOrigin, setCountryOfOrigin] = useState<string>('');
-  const [user, setUser] = useState<User | null>(null);
-
+  
+  const { user } = useAuth(); // Use useAuth to access the current user
   const router = useRouter();
-
-  useEffect(() => {
-    const auth = getAuth();
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      setUser(user);
-    });
-
-    return () => unsubscribe();
-  }, []);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -44,8 +35,8 @@ export default function RecipeForm() {
           countryOfOrigin,
           author: {
             uid: user.uid,
-            displayName: user.displayName,
-            email: user.email,
+            displayName: user.displayName || '',
+            email: user.email || '',
           },
         });
 
