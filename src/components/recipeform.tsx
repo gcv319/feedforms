@@ -13,7 +13,6 @@ export default function RecipeForm() {
   const [name, setName] = useState<string>('');
   const [ingredients, setIngredients] = useState<string[]>([]);
   const [image, setImage] = useState<File | null>(null); 
-  const [imageUrl, setImageUrl] = useState<string>('');
   const [countryOfOrigin, setCountryOfOrigin] = useState<string>('');
   const [user, setUser] = useState<User | null>(null);
 
@@ -38,11 +37,10 @@ export default function RecipeForm() {
 
         const imageUrl = await getDownloadURL(storageRef);
 
-        // Add recipe data to Firestore
         const docRef = await addDoc(collection(db, 'recipes'), {
           name,
           ingredients,
-          image: imageUrl, // Set image URL
+          image: imageUrl, 
           countryOfOrigin,
           author: {
             uid: user.uid,
@@ -112,12 +110,12 @@ export default function RecipeForm() {
           className="form-control"
           id="image"
           accept="image/*"
-          onChange={(e) => setImage(e.target.files![0])} // Store the File object
+          onChange={(e) => setImage(e.target.files![0])}
         />
       </div>
 
       <div className="mb-3">
-        <label htmlFor="countryOfOrigin" className="form-label">Country of Origin:</label>
+        <label htmlFor="countryOfOrigin" className="form-label">Category:</label>
         <select
           id="countryOfOrigin"
           className="form-select"
