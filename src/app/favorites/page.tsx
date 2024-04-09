@@ -3,9 +3,9 @@ import React, { useState, useEffect } from 'react';
 import { getAuth, onAuthStateChanged, User } from 'firebase/auth'; // Import getAuth
 import { collection, getDocs } from 'firebase/firestore';
 import { db } from '@/utils/firebase'; // No need to import auth here
-import RecipeCard from '@/components/recipecard';
 import Navbar from '@/components/navbar';
 import "bootstrap/dist/css/bootstrap.min.css";
+import ListOfFavorites from '@/components/listoffavorites';
 
 interface Recipe {
   name: string;
@@ -51,14 +51,7 @@ export default function Favorites() {
   return (
     <main>
       <Navbar />
-      <h1>Favorite Recipes</h1>
-      <div className="row">
-        {favoriteRecipes.map((recipe, index) => (
-          <div className="col-md-4" key={index}>
-            <RecipeCard recipe={recipe} />
-          </div>
-        ))}
-      </div>
+      <ListOfFavorites />
     </main>
   );
 }
