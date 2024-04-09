@@ -1,5 +1,5 @@
 "use client"
-import React, { useEffect } from 'react';
+import React from 'react';
 import "bootstrap/dist/css/bootstrap.min.css";
 import { auth } from "@/utils/firebase";
 import { signInWithEmailAndPassword } from "firebase/auth";
@@ -56,8 +56,9 @@ export default function Login() {
             <button type="button" className="btn btn-danger" onClick={handleGoogleLogin}>Login with Google</button>
           </div>
           <div className="text-center mt-3">
-            <a href="/signup" className="text-decoration-none">Don't have an account? Click here!</a>
+            <a href="/signup" className="text-decoration-none">Don&apos;t have an account? Click here!</a>
           </div>
+
         </div>
       </div>
     </main>

@@ -7,8 +7,11 @@ interface Recipe {
   name: string;
   image: string;
   countryOfOrigin: string;
-  displayName: string;
-  ingredients: string[]; 
+  author: {
+    displayName: string;
+    email: string;
+    uid: string;
+  };
 }
 
 export default function ListOfRecipes() {
@@ -20,15 +23,8 @@ export default function ListOfRecipes() {
         const querySnapshot = await getDocs(collection(db, 'recipes'));
         const recipesData: Recipe[] = [];
         querySnapshot.forEach((doc) => {
-          const data = doc.data();
-          const recipe: Recipe = {
-            name: data.name,
-            image: data.image,
-            countryOfOrigin: data.countryOfOrigin,
-            displayName: data.author.displayName,
-            ingredients: data.ingredients,
-          };
-          recipesData.push(recipe);
+          const data = doc.data() as Recipe;
+          recipesData.push(data);
         });
         setRecipes(recipesData);
       } catch (error) {
@@ -40,15 +36,10 @@ export default function ListOfRecipes() {
   }, []);
 
   return (
-    <div className="container">
-      <div className="row row-cols-1 row-cols-md-3 g-4">
-        {recipes.map((recipe, index) => (
-          <div key={index} className="col">
-            <RecipeCard recipe={recipe} />
-          </div>
-        ))}
-      </div>
+    <div className="container" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '20px' }}>
+      {recipes.map((recipe, index) => (
+        <RecipeCard key={index} recipe={recipe} />
+      ))}
     </div>
   );
 }
-
