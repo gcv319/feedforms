@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { getAuth, onAuthStateChanged, User } from 'firebase/auth'; // Import getAuth
 import { collection, getDocs } from 'firebase/firestore';
-import { db } from '@/utils/firebase'; // No need to import auth here
+import { db } from '@/utils/firebase'; 
 import Navbar from '@/components/navbar';
 import "bootstrap/dist/css/bootstrap.min.css";
 import ListOfFavorites from '@/components/listoffavorites';

@@ -5,6 +5,7 @@ import { auth } from "@/utils/firebase";
 import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth"; // Import updateProfile
 import { handleGoogleSignIn } from "@/utils/utils";
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 
 export default function Signup() {
   const router = useRouter();
@@ -40,9 +41,13 @@ export default function Signup() {
     }
   };
 
+  const handleCancel = () => {
+    router.push('/');
+  }
+
   return (
     <main className="container my-5">
-      <h1 className="text-center mb-4">FeedForms</h1>
+      <h1 className="text-center mb-4"><Image src="/feedforms-logo.png" width={48} height={48} alt="FeedForms-Logo" />FeedForms</h1>
       <div className="row justify-content-center">
         <div className="col-md-6">
           <form onSubmit={handleSignup}>
@@ -74,6 +79,15 @@ export default function Signup() {
           </div>
         </div>
       </div>
+
+      {/*Unplugin Icons doesn't work in my Nextjs App not sure why... **/}
+      <button
+        type="button"
+        className="btn btn-secondary position-absolute top-0 end-0 mt-3 me-3"
+        onClick={handleCancel}
+      >
+        Return to Home Page
+      </button>
     </main>
   );
 }
